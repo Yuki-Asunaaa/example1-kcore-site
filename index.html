@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="探索图的 k-核分解：高亮核数分组，查看节点连接，逐步理解最小剩余度剥离。">
+  <title>图与核心 · k-核分解</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%232762d5'/%3E%3Ctext x='20' y='28' text-anchor='middle' font-size='26' fill='white'%3Ek%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/vendor/d3.v7.min.js"></script>
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳至网络视图</a>
+  <header class="topbar">
+    <div class="brand"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M7 10 23 7 25 24 7 10 10 26 23 7"/><circle cx="7" cy="10" r="3"/><circle cx="23" cy="7" r="3"/><circle cx="25" cy="24" r="3"/><circle cx="10" cy="26" r="3"/></svg><span>图与核心</span><span class="brand-en">GRAPH STUDIES</span></div>
+    <span class="case-tag">案例 01 <span>／</span> k-核分解</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div><h1 id="page-title">看见网络的核心<span class="title-dot">。</span></h1><p>从连接关系出发，理解每一个节点的核数。</p></div>
+      <div class="intro-actions"><span id="connection" class="connection" role="status">正在加载案例结果</span><button id="reload" class="button secondary"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M19 11a7 7 0 0 0-12-5L4 9m1 4a7 7 0 0 0 12 5l3-3"/></svg>重新加载数据</button></div>
+    </section>
+
+    <div id="error" class="error-banner" role="alert" hidden><strong>暂时无法读取图数据</strong><span id="error-message"></span><button id="retry" class="button">重试</button></div>
+    <div id="loading" class="loading-panel" role="status"><div></div><div></div><p>正在读取案例计算结果…</p></div>
+    <noscript><p class="error-banner">此页面需要 JavaScript 才能展示交互网络。</p></noscript>
+
+    <div id="application" hidden>
+      <section id="workspace" class="workspace" aria-label="图探索工作区" tabindex="-1">
+        <div class="graph-panel">
+          <div class="panel-heading"><div><h2>网络视图</h2><span id="graph-stats" class="muted"></span></div><div class="graph-tools" aria-label="视图控制"><button id="zoom-out" class="icon-button" aria-label="缩小网络图" title="缩小"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button><span id="zoom-label">100%</span><button id="zoom-in" class="icon-button" aria-label="放大网络图" title="放大"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></button><button id="reset-view" class="icon-button" aria-label="重置视图" title="重置视图"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4"/></svg></button></div></div>
+          <div id="graph-container" class="graph-container"><svg id="network" aria-label="可交互的无向网络图，可用 Tab 选择节点，Enter 查看详情" role="group"></svg><span id="view-state" class="view-state">原始网络</span><div class="graph-hint">拖动节点调整布局 · 滚轮缩放</div></div>
+          <div class="graph-footer"><div class="legend"><span><i class="legend-dot blue"></i>原始节点</span><span><i class="legend-dot green"></i>核数高亮</span><span id="removed-legend" hidden><i class="legend-dot removed"></i>已剥离</span></div><span id="visible-count" class="muted"></span></div>
+        </div>
+
+        <aside class="inspector" aria-label="核数筛选与节点详情">
+          <section class="filter-section"><div class="section-title"><h2>核数分组</h2><button id="clear" class="text-button">清除 <span lang="en">clear</span></button></div><p class="helper">选择 k 值，高亮核数相同的节点。</p><div id="shell-buttons" class="shell-buttons" aria-label="选择核数"></div><p id="filter-summary" class="filter-summary" aria-live="polite"></p><div id="filter-members" class="node-chips" aria-label="当前高亮节点"></div></section>
+          <section class="node-section"><div class="section-title"><h2>节点档案</h2><span id="node-index" class="small-label">未选择</span></div><div id="node-empty" class="empty-details"><svg aria-hidden="true" viewBox="0 0 48 48"><path d="M12 12 35 18 24 36 12 12"/><circle cx="12" cy="12" r="5"/><circle cx="35" cy="18" r="5"/><circle cx="24" cy="36" r="5"/></svg><p>点一个节点，看看它的连接。</p><small>也可以用 Tab 和 Enter 键选择。</small></div><div id="node-details" hidden><div class="node-metrics"><div><span>原图度数</span><strong id="node-degree"></strong></div><div><span>核数</span><strong id="node-core"></strong></div></div><p id="node-state" class="helper"></p><div class="neighbor-label">相邻节点 <span id="neighbor-count"></span></div><div id="neighbors" class="node-chips"></div></div></section>
+          <div class="concept-note"><strong>连接多，核数就高吗？</strong><p>核数取决于所在子图的连接结构，并不等于节点本身的度数。</p><button id="example-node" class="text-button"><span id="example-label">查看一个节点实例</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
+        </aside>
+      </section>
+
+      <section class="peeling" aria-labelledby="peeling-title">
+        <div class="peeling-heading"><div><h2 id="peeling-title">逐步剥离</h2><p class="helper">每次移除剩余度最小的节点，观察核数如何确定。</p></div><div class="playback"><button id="previous" class="icon-button" aria-label="上一步" title="上一步"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></svg></button><button id="play" class="button primary"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></svg><span>自动播放</span></button><button id="next" class="icon-button" aria-label="下一步" title="下一步"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m10 6 6 6-6 6"/></svg></button><button id="reset-steps" class="text-button">重置</button></div></div>
+        <div id="steps" class="steps" aria-label="剥离顺序"></div>
+        <div class="step-detail" role="status" aria-live="polite"><span id="step-number" class="step-number">00</span><div><strong id="step-title">从完整网络开始</strong><p id="step-description">点击“下一步”或任一步骤，观察节点移除后的网络。</p></div><span id="step-count" class="step-count"></span></div>
+      </section>
+
+      <section class="reading" aria-label="概念说明"><div><h2>如何读懂 k-核？</h2><p>一个 k-core 中，每个节点在这个子图内至少有 k 个邻居。节点的<strong>核数</strong>，就是它能够属于的最高阶 k-core。</p></div><div><h3>分组与核心，是两种看法</h3><p>本页按钮按“核数 = k”分组；而 k-core 包含“核数 ≥ k”的所有节点。<span id="core-example"></span></p></div><div><h3>剩余度会下降，核数不会回退</h3><p>删除节点会改变剩余图。算法保留历次最小剩余度的最大值，因此最后一个节点即使剩余度为 0，核数也不一定为 0。</p></div></section>
+      <footer class="page-footer"><span>案例数据 <span id="source-file"></span> · 无向无权图</span><a id="download" href="#">下载计算结果 JSON <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></svg></a></footer>
+    </div>
+  </main>
+</body>
+</html>

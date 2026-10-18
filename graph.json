@@ -1,0 +1,229 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "source_file": "case1.txt",
+    "node_count": 10,
+    "edge_count": 14,
+    "directed": false,
+    "weighted": false,
+    "max_core": 2,
+    "available_shells": [
+      1,
+      2
+    ],
+    "algorithm": "handwritten_min_degree_peeling"
+  },
+  "nodes": [
+    {
+      "id": 1,
+      "degree": 1,
+      "core_number": 1
+    },
+    {
+      "id": 2,
+      "degree": 5,
+      "core_number": 2
+    },
+    {
+      "id": 3,
+      "degree": 2,
+      "core_number": 2
+    },
+    {
+      "id": 4,
+      "degree": 3,
+      "core_number": 2
+    },
+    {
+      "id": 5,
+      "degree": 4,
+      "core_number": 2
+    },
+    {
+      "id": 6,
+      "degree": 3,
+      "core_number": 2
+    },
+    {
+      "id": 7,
+      "degree": 3,
+      "core_number": 2
+    },
+    {
+      "id": 8,
+      "degree": 5,
+      "core_number": 2
+    },
+    {
+      "id": 9,
+      "degree": 1,
+      "core_number": 1
+    },
+    {
+      "id": 10,
+      "degree": 1,
+      "core_number": 1
+    }
+  ],
+  "links": [
+    {
+      "source": 1,
+      "target": 2
+    },
+    {
+      "source": 2,
+      "target": 3
+    },
+    {
+      "source": 2,
+      "target": 4
+    },
+    {
+      "source": 2,
+      "target": 5
+    },
+    {
+      "source": 2,
+      "target": 7
+    },
+    {
+      "source": 3,
+      "target": 8
+    },
+    {
+      "source": 4,
+      "target": 5
+    },
+    {
+      "source": 4,
+      "target": 6
+    },
+    {
+      "source": 5,
+      "target": 6
+    },
+    {
+      "source": 5,
+      "target": 8
+    },
+    {
+      "source": 6,
+      "target": 7
+    },
+    {
+      "source": 7,
+      "target": 8
+    },
+    {
+      "source": 8,
+      "target": 9
+    },
+    {
+      "source": 8,
+      "target": 10
+    }
+  ],
+  "shells": {
+    "1": [
+      1,
+      9,
+      10
+    ],
+    "2": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "cores": {
+    "0": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "1": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "2": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "peeling_steps": [
+    {
+      "node": 1,
+      "degree_at_removal": 1,
+      "core_number": 1
+    },
+    {
+      "node": 9,
+      "degree_at_removal": 1,
+      "core_number": 1
+    },
+    {
+      "node": 10,
+      "degree_at_removal": 1,
+      "core_number": 1
+    },
+    {
+      "node": 3,
+      "degree_at_removal": 2,
+      "core_number": 2
+    },
+    {
+      "node": 8,
+      "degree_at_removal": 2,
+      "core_number": 2
+    },
+    {
+      "node": 7,
+      "degree_at_removal": 2,
+      "core_number": 2
+    },
+    {
+      "node": 2,
+      "degree_at_removal": 2,
+      "core_number": 2
+    },
+    {
+      "node": 4,
+      "degree_at_removal": 2,
+      "core_number": 2
+    },
+    {
+      "node": 5,
+      "degree_at_removal": 1,
+      "core_number": 2
+    },
+    {
+      "node": 6,
+      "degree_at_removal": 0,
+      "core_number": 2
+    }
+  ]
+}
